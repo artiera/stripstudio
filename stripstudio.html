@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strip Studio — Susun & Ekspor Filmstrip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #16181a;
+    --panel: #1e2220;
+    --panel-2: #262b28;
+    --line: #34392f;
+    --text: #ece7dc;
+    --muted: #8d9187;
+    --amber: #e8a33d;
+    --amber-dim: #6b4f24;
+    --red: #c1443b;
+    --green: #7ea87a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    padding: 22px 28px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  header h1{
+    font-family:'Archivo', sans-serif;
+    font-weight:800;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    margin:0;
+  }
+  header h1 span{ color: var(--amber); }
+  header p{
+    margin:0;
+    font-size:12.5px;
+    color: var(--muted);
+    max-width: 360px;
+    text-align:right;
+    line-height:1.4;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 73px);
+  }
+  @media (max-width: 900px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border-right:1px solid var(--line);
+    padding: 22px 22px 40px;
+    overflow-y:auto;
+  }
+  @media (max-width: 900px){
+    .panel{ border-right:none; border-bottom:1px solid var(--line); }
+  }
+
+  .step{
+    margin-bottom: 26px;
+  }
+  .step-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .step-num{
+    font-family:'Archivo', sans-serif;
+    font-weight:700;
+    font-size:12px;
+    color: var(--bg);
+    background: var(--amber);
+    width:20px; height:20px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .step-title{
+    font-family:'Archivo', sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+  }
+  .step-body{
+    padding-left: 30px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height:1.5;
+  }
+
+  .slots{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap:5px;
+    margin-top:4px;
+  }
+  .slot{
+    aspect-ratio:1/1;
+    border-radius:3px;
+    border:1px dashed var(--line);
+    background: var(--panel-2);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    overflow:hidden;
+    cursor:grab;
+  }
+  .slot.filled{ border-style:solid; border-color: var(--line); }
+  .slot img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .slot .idx{
+    position:absolute; top:2px; left:3px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:9px;
+    color: var(--amber);
+    background: rgba(0,0,0,.55);
+    padding:1px 3px;
+    border-radius:2px;
+  }
+  .slot .rm{
+    position:absolute; top:2px; right:2px;
+    width:14px; height:14px;
+    border-radius:50%;
+    background: rgba(0,0,0,.6);
+    color:#fff;
+    font-size:10px;
+    line-height:14px;
+    text-align:center;
+    cursor:pointer;
+    display:none;
+  }
+  .slot.filled:hover .rm{ display:block; }
+  .slot.dragover{ border-color: var(--amber); background: var(--amber-dim); }
+  .slot .plus{ color: var(--line); font-size:16px; }
+
+  .upload-btn{
+    margin-top:12px;
+    width:100%;
+    padding: 10px;
+    border-radius:4px;
+    border:1px solid var(--amber);
+    background: transparent;
+    color: var(--amber);
+    font-family:'Inter';
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    transition: background .15s ease;
+  }
+  .upload-btn:hover{ background: rgba(232,163,61,.1); }
+  .count-line{
+    margin-top:8px;
+    font-size:12px;
+    color: var(--muted);
+  }
+  .count-line b{ color: var(--text); }
+
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block;
+    font-size:12px;
+    color: var(--muted);
+    margin-bottom:5px;
+  }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .unit-toggle{
+    display:flex;
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .unit-toggle button{
+    flex:1;
+    padding:7px 0;
+    background: var(--panel-2);
+    border:none;
+    color: var(--muted);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .unit-toggle button.active{
+    background: var(--amber);
+    color: var(--bg);
+    font-weight:600;
+  }
+  input[type=number], input[type=text]{
+    width:100%;
+    background: var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:8px 9px;
+    color: var(--text);
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+  }
+  input[type=number]:focus, input[type=text]:focus{
+    outline:none; border-color: var(--amber);
+  }
+  .hint{ font-size:11px; color:var(--muted); margin-top:5px; }
+  .px-readout{
+    margin-top:8px;
+    font-size:11.5px;
+    color: var(--amber);
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  .export-btn{
+    width:100%;
+    padding:13px;
+    border-radius:4px;
+    border:none;
+    background: var(--amber);
+    color: var(--bg);
+    font-family:'Archivo', sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    letter-spacing:.01em;
+    cursor:pointer;
+    margin-top: 6px;
+    transition: transform .1s ease;
+  }
+  .export-btn:hover{ transform: translateY(-1px); }
+  .export-btn:disabled{
+    background: var(--panel-2);
+    color: var(--muted);
+    cursor:not-allowed;
+    transform:none;
+  }
+  .export-status{
+    font-size:12px;
+    margin-top:8px;
+    color: var(--green);
+    min-height:16px;
+  }
+
+  /* main preview area */
+  main{
+    padding: 30px 34px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap: 18px;
+  }
+  .preview-label{
+    align-self:flex-start;
+    font-family:'Archivo', sans-serif;
+    font-weight:700;
+    font-size:13px;
+    color: var(--muted);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .preview-label .ratio{
+    color: var(--amber);
+    font-family:'JetBrains Mono',monospace;
+    font-weight:400;
+  }
+
+  .strip-wrap{
+    width:100%;
+    max-width: 980px;
+    background: var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding: 22px 16px;
+  }
+  .sprocket-row{
+    display:flex;
+    justify-content:space-between;
+    padding: 0 6px;
+    margin-bottom:8px;
+  }
+  .sprocket-row.bottom{ margin-bottom:0; margin-top:8px; }
+  .sprocket-row div{
+    width:6px; height:6px;
+    border-radius:1px;
+    background: var(--line);
+  }
+  .strip{
+    display:flex;
+    width:100%;
+    border-radius:2px;
+    overflow:hidden;
+    background: #000;
+  }
+  .strip .cell{
+    flex:1;
+    aspect-ratio:1/1;
+    position:relative;
+    overflow:hidden;
+    border-right: 1px solid #000;
+  }
+  .strip .cell:last-child{ border-right:none; }
+  .strip .cell img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .strip .cell.empty{
+    background: repeating-linear-gradient(45deg, #202420, #202420 6px, #1a1d1a 6px, #1a1d1a 12px);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--line);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+  }
+
+  .empty-state{
+    color: var(--muted);
+    font-size:13px;
+    text-align:center;
+    padding: 60px 20px;
+    max-width:420px;
+    line-height:1.6;
+  }
+  .empty-state b{ color: var(--text); }
+
+  #fileInput{ display:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Strip<span>Studio</span></h1>
+  <p>Susun 14 foto 1:1 jadi satu strip horizontal, atur ukuran cetak, lalu unduh sebagai gambar.</p>
+</header>
+
+<div class="layout">
+  <div class="panel">
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">1</div>
+        <div class="step-title">Input 14 gambar</div>
+      </div>
+      <div class="step-body">
+        <div class="slots" id="slots"></div>
+        <button class="upload-btn" id="uploadBtn">+ Pilih Gambar</button>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <div class="count-line"><b id="countNum">0</b> / 14 terisi &nbsp;·&nbsp; seret kotak untuk mengubah urutan</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">2</div>
+        <div class="step-title">Ukuran canvas ekspor</div>
+      </div>
+      <div class="step-body">
+        <div class="field">
+          <label>Satuan</label>
+          <div class="unit-toggle">
+            <button type="button" data-unit="px" class="active">PX</button>
+            <button type="button" data-unit="cm">CM</button>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label>Lebar total</label>
+            <input type="number" id="widthInput" value="4200" min="1">
+          </div>
+          <div class="field">
+            <label>Tinggi total</label>
+            <input type="number" id="heightInput" value="300" min="1">
+          </div>
+        </div>
+        <div class="field" id="dpiField" style="display:none;">
+          <label>DPI (resolusi cetak)</label>
+          <input type="number" id="dpiInput" value="300" min="72">
+        </div>
+        <div class="px-readout" id="pxReadout"></div>
+        <div class="hint">Lebar dibagi rata untuk 14 gambar; tiap gambar otomatis di-crop mengisi slotnya (center crop).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">3</div>
+        <div class="step-title">Ekspor</div>
+      </div>
+      <div class="step-body">
+        <button class="export-btn" id="exportBtn" disabled>Unduh Gambar</button>
+        <div class="export-status" id="exportStatus"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <main>
+    <div class="preview-label">PRATINJAU &nbsp;<span class="ratio" id="ratioLabel"></span></div>
+    <div class="strip-wrap" id="stripWrap">
+      <div class="sprocket-row" id="sprocketTop"></div>
+      <div class="strip" id="strip"></div>
+      <div class="sprocket-row bottom" id="sprocketBottom"></div>
+    </div>
+    <div class="empty-state" id="emptyState">Belum ada gambar. Mulai dengan menekan <b>+ Pilih Gambar</b> di panel kiri — bisa langsung pilih beberapa sekaligus.</div>
+  </main>
+</div>
+
+<script>
+const SLOT_COUNT = 14;
+let images = new Array(SLOT_COUNT).fill(null); // { url, img (HTMLImageElement) }
+let dragSrcIndex = null;
+
+const slotsEl = document.getElementById('slots');
+const stripEl = document.getElementById('strip');
+const countNumEl = document.getElementById('countNum');
+const exportBtn = document.getElementById('exportBtn');
+const exportStatus = document.getElementById('exportStatus');
+const emptyState = document.getElementById('emptyState');
+const stripWrap = document.getElementById('stripWrap');
+const ratioLabel = document.getElementById('ratioLabel');
+const sprocketTop = document.getElementById('sprocketTop');
+const sprocketBottom = document.getElementById('sprocketBottom');
+
+function buildSprockets(){
+  sprocketTop.innerHTML = '';
+  sprocketBottom.innerHTML = '';
+  for(let i=0;i<28;i++){
+    sprocketTop.appendChild(document.createElement('div'));
+    sprocketBottom.appendChild(document.createElement('div'));
+  }
+}
+buildSprockets();
+
+function renderSlots(){
+  slotsEl.innerHTML = '';
+  for(let i=0;i<SLOT_COUNT;i++){
+    const s = document.createElement('div');
+    s.className = 'slot' + (images[i] ? ' filled' : '');
+    s.draggable = !!images[i];
+    s.dataset.index = i;
+
+    if(images[i]){
+      s.innerHTML = `
+        <img src="${images[i].url}">
+        <div class="idx">${i+1}</div>
+        <div class="rm">×</div>
+      `;
+      s.querySelector('.rm').addEventListener('click', (e)=>{
+        e.stopPropagation();
+        images[i] = null;
+        renderAll();
+      });
+    } else {
+      s.innerHTML = `<div class="plus">+</div>`;
+      s.addEventListener('click', ()=> {
+        pendingSlot = i;
+        document.getElementById('fileInput').click();
+      });
+    }
+
+    s.addEventListener('dragstart', (e)=>{
+      if(!images[i]) { e.preventDefault(); return; }
+      dragSrcIndex = i;
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    s.addEventListener('dragover', (e)=>{
+      e.preventDefault();
+      s.classList.add('dragover');
+    });
+    s.addEventListener('dragleave', ()=> s.classList.remove('dragover'));
+    s.addEventListener('drop', (e)=>{
+      e.preventDefault();
+      s.classList.remove('dragover');
+      if(dragSrcIndex === null || dragSrcIndex === i) return;
+      const tmp = images[i];
+      images[i] = images[dragSrcIndex];
+      images[dragSrcIndex] = tmp;
+      dragSrcIndex = null;
+      renderAll();
+    });
+
+    slotsEl.appendChild(s);
+  }
+  const filled = images.filter(Boolean).length;
+  countNumEl.textContent = filled;
+  exportBtn.disabled = filled === 0;
+}
+
+function renderStrip(){
+  stripEl.innerHTML = '';
+  const filled = images.filter(Boolean).length;
+  if(filled === 0){
+    stripWrap.style.display = 'none';
+    emptyState.style.display = 'block';
+    ratioLabel.textContent = '';
+    return;
+  }
+  stripWrap.style.display = 'block';
+  emptyState.style.display = 'none';
+
+  const w = parseFloat(document.getElementById('widthInput').value) || 0;
+  const h = parseFloat(document.getElementById('heightInput').value) || 0;
+  if(w>0 && h>0){
+    const ratio = (w/h).toFixed(2);
+    ratioLabel.textContent = `${w} × ${h} · rasio ${ratio}:1`;
+  }
+
+  for(let i=0;i<SLOT_COUNT;i++){
+    const cell = document.createElement('div');
+    if(images[i]){
+      cell.className = 'cell';
+      cell.innerHTML = `<img src="${images[i].url}">`;
+    } else {
+      cell.className = 'cell empty';
+      cell.textContent = i+1;
+    }
+    stripEl.appendChild(cell);
+  }
+}
+
+function renderAll(){
+  renderSlots();
+  renderStrip();
+}
+
+let pendingSlot = null;
+const fileInput = document.getElementById('fileInput');
+document.getElementById('uploadBtn').addEventListener('click', ()=>{
+  pendingSlot = null;
+  fileInput.click();
+});
+
+fileInput.addEventListener('change', (e)=>{
+  const files = Array.from(e.target.files);
+  if(files.length === 0) return;
+
+  if(pendingSlot !== null){
+    loadFileIntoSlot(files[0], pendingSlot);
+    pendingSlot = null;
+  } else {
+    let slotIdx = 0;
+    for(const file of files){
+      while(slotIdx < SLOT_COUNT && images[slotIdx]) slotIdx++;
+      if(slotIdx >= SLOT_COUNT) break;
+      loadFileIntoSlot(file, slotIdx);
+      slotIdx++;
+    }
+  }
+  fileInput.value = '';
+});
+
+function loadFileIntoSlot(file, idx){
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{
+    images[idx] = { url, img };
+    renderAll();
+  };
+  img.src = url;
+}
+
+// unit toggle
+let currentUnit = 'px';
+document.querySelectorAll('.unit-toggle button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.unit-toggle button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const newUnit = btn.dataset.unit;
+    if(newUnit === currentUnit) return;
+
+    const wEl = document.getElementById('widthInput');
+    const hEl = document.getElementById('heightInput');
+    const dpi = parseFloat(document.getElementById('dpiInput').value) || 300;
+    let w = parseFloat(wEl.value) || 0;
+    let h = parseFloat(hEl.value) || 0;
+
+    if(currentUnit === 'px' && newUnit === 'cm'){
+      w = +(w / dpi * 2.54).toFixed(2);
+      h = +(h / dpi * 2.54).toFixed(2);
+    } else if(currentUnit === 'cm' && newUnit === 'px'){
+      w = Math.round(w / 2.54 * dpi);
+      h = Math.round(h / 2.54 * dpi);
+    }
+    wEl.value = w;
+    hEl.value = h;
+    currentUnit = newUnit;
+    document.getElementById('dpiField').style.display = (newUnit === 'cm') ? 'block' : 'none';
+    updatePxReadout();
+    renderStrip();
+  });
+});
+
+function updatePxReadout(){
+  const readout = document.getElementById('pxReadout');
+  if(currentUnit === 'cm'){
+    const dpi = parseFloat(document.getElementById('dpiInput').value) || 300;
+    const w = parseFloat(document.getElementById('widthInput').value) || 0;
+    const h = parseFloat(document.getElementById('heightInput').value) || 0;
+    const pxW = Math.round(w / 2.54 * dpi);
+    const pxH = Math.round(h / 2.54 * dpi);
+    readout.textContent = `≈ ${pxW} × ${pxH} px pada ${dpi} DPI`;
+  } else {
+    readout.textContent = '';
+  }
+}
+
+['widthInput','heightInput','dpiInput'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', ()=>{
+    updatePxReadout();
+    renderStrip();
+  });
+});
+
+// EXPORT
+exportBtn.addEventListener('click', ()=>{
+  const filled = images.filter(Boolean).length;
+  if(filled === 0) return;
+
+  let w = parseFloat(document.getElementById('widthInput').value) || 0;
+  let h = parseFloat(document.getElementById('heightInput').value) || 0;
+  if(currentUnit === 'cm'){
+    const dpi = parseFloat(document.getElementById('dpiInput').value) || 300;
+    w = Math.round(w / 2.54 * dpi);
+    h = Math.round(h / 2.54 * dpi);
+  } else {
+    w = Math.round(w);
+    h = Math.round(h);
+  }
+  if(w <= 0 || h <= 0){
+    exportStatus.style.color = 'var(--red)';
+    exportStatus.textContent = 'Ukuran canvas tidak valid.';
+    return;
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,w,h);
+
+  const cellW = w / SLOT_COUNT;
+  for(let i=0;i<SLOT_COUNT;i++){
+    if(!images[i]) continue;
+    const img = images[i].img;
+    const x0 = Math.round(i * cellW);
+    const x1 = Math.round((i+1) * cellW);
+    const cw = x1 - x0;
+    const ch = h;
+
+    // center-crop cover
+    const srcSize = Math.min(img.naturalWidth, img.naturalHeight);
+    const sx = (img.naturalWidth - srcSize) / 2;
+    const sy = (img.naturalHeight - srcSize) / 2;
+
+    ctx.drawImage(img, sx, sy, srcSize, srcSize, x0, 0, cw, ch);
+  }
+
+  canvas.toBlob((blob)=>{
+    const link = document.createElement('a');
+    link.download = `stripstudio-${w}x${h}.png`;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    exportStatus.style.color = 'var(--green)';
+    exportStatus.textContent = `Terunduh: ${w} × ${h}px, ${filled}/14 gambar terisi.`;
+  }, 'image/png');
+});
+
+renderAll();
+updatePxReadout();
+</script>
+
+</body>
+</html>
