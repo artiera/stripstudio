@@ -665,15 +665,63 @@ exportBtn.addEventListener('click', ()=>{
     ctx.drawImage(img, sx, sy, srcSize, srcSize, x0, 0, cw, ch);
   }
 
+  exportStatus.style.color = 'var(--muted)';
+  exportStatus.textContent = 'Menyiapkan file...';
+
   canvas.toBlob((blob)=>{
+    if(!blob){
+      exportStatus.style.color = 'var(--red)';
+      exportStatus.textContent = 'Gagal membuat gambar. Coba ukuran canvas yang lebih kecil.';
+      return;
+    }
+    const filename = `stripstudio-${w}x${h}.png`;
+    const blobUrl = URL.createObjectURL(blob);
+
+    // Try normal download first (works on desktop + most Android browsers)
     const link = document.createElement('a');
-    link.download = `stripstudio-${w}x${h}.png`;
-    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.href = blobUrl;
+    link.style.display = 'none';
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+
     exportStatus.style.color = 'var(--green)';
-    exportStatus.textContent = `Terunduh: ${w} × ${h}px, ${filled}/14 gambar terisi.`;
+    exportStatus.textContent = `Selesai: ${w} × ${h}px, ${filled}/14 gambar terisi.`;
+
+    // Always show a manual-save fallback too, since download attribute
+    // is unreliable in some mobile / in-app browsers.
+    showExportPreview(blobUrl, filename);
   }, 'image/png');
 });
+
+function showExportPreview(blobUrl, filename){
+  let overlay = document.getElementById('exportOverlay');
+  if(overlay) overlay.remove();
+
+  overlay = document.createElement('div');
+  overlay.id = 'exportOverlay';
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(10,11,10,.88);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; z-index:9999; padding:24px;
+  `;
+  overlay.innerHTML = `
+    <div style="max-width:90vw; max-height:60vh; overflow:auto; border:1px solid var(--line); border-radius:6px;">
+      <img src="${blobUrl}" style="display:block; max-width:100%; height:auto;">
+    </div>
+    <div style="color:var(--text); font-size:13px; text-align:center; max-width:340px; line-height:1.5;">
+      Kalau unduhan tidak otomatis mulai, <b>tekan lama gambar di atas</b> lalu pilih "Simpan Gambar" / "Download image" — atau buka di tab baru.
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a href="${blobUrl}" download="${filename}" style="padding:9px 16px; background:var(--amber); color:var(--bg); border-radius:4px; font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; text-decoration:none;">Coba Unduh Lagi</a>
+      <a href="${blobUrl}" target="_blank" rel="noopener" style="padding:9px 16px; border:1px solid var(--line); color:var(--text); border-radius:4px; font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; text-decoration:none;">Buka Tab Baru</a>
+      <button id="closeOverlay" style="padding:9px 16px; background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:4px; font-size:13px; cursor:pointer;">Tutup</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById('closeOverlay').addEventListener('click', ()=> overlay.remove());
+}
 
 renderAll();
 updatePxReadout();
