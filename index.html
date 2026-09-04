@@ -3,446 +3,522 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Strip Studio — Susun & Ekspor Filmstrip</title>
+<title>*~* StripStudio 2000 *~* Photo Strip Maker *~*</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS&family=VT323&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #16181a;
-    --panel: #1e2220;
-    --panel-2: #262b28;
-    --line: #34392f;
-    --text: #ece7dc;
-    --muted: #8d9187;
-    --amber: #e8a33d;
-    --amber-dim: #6b4f24;
-    --red: #c1443b;
-    --green: #7ea87a;
+    --face: #ece9d8;
+    --face-dark: #aca899;
+    --face-darker: #716f64;
+    --face-light: #ffffff;
+    --titlebar1: #0a58c2;
+    --titlebar2: #5badf7;
+    --link: #0000ee;
+    --link-visited: #551a8b;
+    --red: #cc0000;
+    --lcd-bg: #001a00;
+    --lcd-text: #33ff55;
+    --body-text: #000000;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
   body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: Verdana, Tahoma, 'Trebuchet MS', sans-serif;
+    font-size: 12px;
+    color: var(--body-text);
+    background-color: #4a5aa8;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1.4px),
+      radial-gradient(circle, rgba(255,255,255,.35) 1px, transparent 1.4px);
+    background-size: 42px 42px, 26px 26px;
+    background-position: 0 0, 13px 20px;
     min-height:100vh;
+    padding: 14px;
   }
-  .mono{ font-family:'JetBrains Mono', monospace; }
 
-  header{
+  /* ---------- marquee banner ---------- */
+  .banner{
+    background: repeating-linear-gradient(45deg, #ffe000, #ffe000 14px, #111 14px, #111 28px);
+    border: 3px solid #111;
+    padding: 3px 0;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 0 #000;
+  }
+  .banner marquee, .banner .fallback{
+    background:#111;
+    color:#ffe000;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    letter-spacing:1px;
+    padding: 3px 0;
+    display:block;
+  }
+
+  /* ---------- window chrome ---------- */
+  .win{
+    max-width: 1040px;
+    margin: 0 auto 16px;
+    background: var(--face);
+    border: 2px solid var(--face-darker);
+    box-shadow:
+      inset 1px 1px 0 var(--face-light),
+      inset -1px -1px 0 var(--face-dark),
+      3px 3px 0 rgba(0,0,0,.35);
+  }
+  .titlebar{
+    background: linear-gradient(180deg, var(--titlebar2) 0%, var(--titlebar1) 55%, #08479c 100%);
+    color: #fff;
+    font-weight:bold;
+    font-size: 13px;
+    padding: 4px 6px;
     display:flex;
-    align-items:baseline;
+    align-items:center;
     justify-content:space-between;
-    padding: 22px 28px 16px;
-    border-bottom:1px solid var(--line);
+    text-shadow: 1px 1px 1px rgba(0,0,0,.6);
   }
-  header h1{
-    font-family:'Archivo', sans-serif;
-    font-weight:800;
-    font-size: 22px;
-    letter-spacing: -0.01em;
-    margin:0;
+  .titlebar .tleft{ display:flex; align-items:center; gap:6px; }
+  .titlebar .icon{
+    width:14px; height:14px;
+    background: radial-gradient(circle at 30% 30%, #fff, #ffd23a 60%, #d68b00);
+    border-radius:2px;
+    display:inline-block;
+    border:1px solid rgba(0,0,0,.3);
   }
-  header h1 span{ color: var(--amber); }
-  header p{
-    margin:0;
-    font-size:12.5px;
-    color: var(--muted);
-    max-width: 360px;
-    text-align:right;
-    line-height:1.4;
+  .winctl{
+    display:flex; gap:3px;
+  }
+  .winctl span{
+    width:16px; height:14px;
+    background: var(--face);
+    border: 1px solid var(--face-darker);
+    box-shadow: inset 1px 1px 0 var(--face-light);
+    color:#000;
+    font-size:10px;
+    line-height:13px;
+    text-align:center;
+    font-family: monospace;
+    font-weight:bold;
   }
 
+  .win-body{ padding: 12px; }
+
+  h1.pagetitle{
+    text-align:center;
+    font-family: 'Trebuchet MS', Verdana, sans-serif;
+    font-size: 28px;
+    margin: 4px 0 2px;
+    background: linear-gradient(180deg, #ffd23a, #ff8a00 60%, #cc5c00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 2px 2px 0 rgba(0,0,0,.15);
+    letter-spacing: 1px;
+  }
+  .subtag{
+    text-align:center;
+    font-size:11px;
+    color:#333;
+    margin-bottom: 10px;
+  }
+  .sparkle{ color:var(--red); }
+
+  hr.groove{
+    border: none;
+    border-top: 1px solid var(--face-dark);
+    border-bottom: 1px solid var(--face-light);
+    margin: 10px 0;
+  }
+
+  /* ---------- layout ---------- */
   .layout{
     display:grid;
-    grid-template-columns: 340px 1fr;
-    gap: 0;
-    min-height: calc(100vh - 73px);
+    grid-template-columns: 300px 1fr;
+    gap: 12px;
   }
-  @media (max-width: 900px){
+  @media (max-width: 860px){
     .layout{ grid-template-columns: 1fr; }
   }
 
-  .panel{
-    background: var(--panel);
-    border-right:1px solid var(--line);
-    padding: 22px 22px 40px;
-    overflow-y:auto;
+  .panel3d{
+    background: var(--face);
+    border: 2px solid;
+    border-color: var(--face-light) var(--face-darker) var(--face-darker) var(--face-light);
+    padding: 10px;
   }
-  @media (max-width: 900px){
-    .panel{ border-right:none; border-bottom:1px solid var(--line); }
+  .panel3d.sunken{
+    border-color: var(--face-darker) var(--face-light) var(--face-light) var(--face-darker);
+    background: #fff;
   }
 
-  .step{
-    margin-bottom: 26px;
-  }
-  .step-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:10px;
-  }
-  .step-num{
-    font-family:'Archivo', sans-serif;
-    font-weight:700;
-    font-size:12px;
-    color: var(--bg);
-    background: var(--amber);
-    width:20px; height:20px;
-    border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    flex-shrink:0;
-  }
   .step-title{
-    font-family:'Archivo', sans-serif;
-    font-weight:700;
-    font-size:14.5px;
+    background: linear-gradient(180deg, var(--titlebar2), var(--titlebar1));
+    color:#fff;
+    font-weight:bold;
+    font-size:12px;
+    padding: 3px 6px;
+    margin: -10px -10px 10px;
+    text-shadow:1px 1px 1px rgba(0,0,0,.5);
   }
-  .step-body{
-    padding-left: 30px;
-    font-size: 13px;
-    color: var(--muted);
-    line-height:1.5;
+  .step-title .num{
+    display:inline-block;
+    background:#fff;
+    color: var(--titlebar1);
+    border-radius:50%;
+    width:15px; height:15px;
+    text-align:center;
+    line-height:15px;
+    font-size:10px;
+    margin-right:5px;
   }
 
+  .step-body{ font-size:11.5px; line-height:1.5; margin-bottom: 10px;}
+
+  /* slots grid */
   .slots{
     display:grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap:5px;
-    margin-top:4px;
+    grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+    gap:4px;
+    margin: 6px 0 8px;
   }
   .slot{
     aspect-ratio:1/1;
-    border-radius:3px;
-    border:1px dashed var(--line);
-    background: var(--panel-2);
-    display:flex; align-items:center; justify-content:center;
+    border: 2px solid;
+    border-color: var(--face-darker) var(--face-light) var(--face-light) var(--face-darker);
+    background: #fff;
     position:relative;
     overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
     cursor:grab;
   }
-  .slot.filled{ border-style:solid; border-color: var(--line); }
-  .slot img{
-    width:100%; height:100%; object-fit:cover; display:block;
+  .slot.filled{
+    border-color: var(--face-light) var(--face-darker) var(--face-darker) var(--face-light);
   }
+  .slot img{ width:100%; height:100%; object-fit:cover; display:block; }
   .slot .idx{
-    position:absolute; top:2px; left:3px;
-    font-family:'JetBrains Mono',monospace;
-    font-size:9px;
-    color: var(--amber);
-    background: rgba(0,0,0,.55);
-    padding:1px 3px;
-    border-radius:2px;
+    position:absolute; top:1px; left:1px;
+    font-family:'VT323',monospace;
+    font-size:11px;
+    color: var(--lcd-text);
+    background: rgba(0,0,0,.7);
+    padding:0 3px;
   }
   .slot .rm{
-    position:absolute; top:2px; right:2px;
-    width:14px; height:14px;
-    border-radius:50%;
-    background: rgba(0,0,0,.6);
+    position:absolute; top:1px; right:1px;
+    width:13px; height:13px;
+    background: var(--red);
     color:#fff;
     font-size:10px;
-    line-height:14px;
+    line-height:13px;
     text-align:center;
     cursor:pointer;
     display:none;
+    border:1px solid #700;
   }
   .slot.filled:hover .rm{ display:block; }
-  .slot.dragover{ border-color: var(--amber); background: var(--amber-dim); }
-  .slot .plus{ color: var(--line); font-size:16px; }
+  .slot.dragover{ background: #ffe9a8; }
+  .slot .plus{ color: var(--face-darker); font-size:16px; font-weight:bold; }
 
-  .upload-btn{
-    margin-top:12px;
-    width:100%;
-    padding: 10px;
-    border-radius:4px;
-    border:1px solid var(--amber);
-    background: transparent;
-    color: var(--amber);
-    font-family:'Inter';
-    font-weight:600;
-    font-size:13px;
-    cursor:pointer;
-    transition: background .15s ease;
-  }
-  .upload-btn:hover{ background: rgba(232,163,61,.1); }
-  .count-line{
-    margin-top:8px;
-    font-size:12px;
-    color: var(--muted);
-  }
-  .count-line b{ color: var(--text); }
-
-  .field{ margin-bottom:14px; }
+  .field{ margin-bottom:10px; }
   .field label{
     display:block;
-    font-size:12px;
-    color: var(--muted);
-    margin-bottom:5px;
-  }
-  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .unit-toggle{
-    display:flex;
-    border:1px solid var(--line);
-    border-radius:4px;
-    overflow:hidden;
-  }
-  .unit-toggle button{
-    flex:1;
-    padding:7px 0;
-    background: var(--panel-2);
-    border:none;
-    color: var(--muted);
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    cursor:pointer;
-  }
-  .unit-toggle button.active{
-    background: var(--amber);
-    color: var(--bg);
-    font-weight:600;
-  }
-  input[type=number], input[type=text]{
-    width:100%;
-    background: var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:4px;
-    padding:8px 9px;
-    color: var(--text);
-    font-family:'JetBrains Mono', monospace;
-    font-size:13px;
-  }
-  input[type=number]:focus, input[type=text]:focus{
-    outline:none; border-color: var(--amber);
-  }
-  .hint{ font-size:11px; color:var(--muted); margin-top:5px; }
-  .px-readout{
-    margin-top:8px;
-    font-size:11.5px;
-    color: var(--amber);
-    font-family:'JetBrains Mono',monospace;
-  }
-
-  .export-btn{
-    width:100%;
-    padding:13px;
-    border-radius:4px;
-    border:none;
-    background: var(--amber);
-    color: var(--bg);
-    font-family:'Archivo', sans-serif;
-    font-weight:700;
-    font-size:14.5px;
-    letter-spacing:.01em;
-    cursor:pointer;
-    margin-top: 6px;
-    transition: transform .1s ease;
-  }
-  .export-btn:hover{ transform: translateY(-1px); }
-  .export-btn:disabled{
-    background: var(--panel-2);
-    color: var(--muted);
-    cursor:not-allowed;
-    transform:none;
-  }
-  .export-status{
-    font-size:12px;
-    margin-top:8px;
-    color: var(--green);
-    min-height:16px;
-  }
-
-  /* main preview area */
-  main{
-    padding: 30px 34px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    gap: 18px;
-  }
-  .preview-label{
-    align-self:flex-start;
-    font-family:'Archivo', sans-serif;
-    font-weight:700;
-    font-size:13px;
-    color: var(--muted);
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .preview-label .ratio{
-    color: var(--amber);
-    font-family:'JetBrains Mono',monospace;
-    font-weight:400;
-  }
-
-  .strip-wrap{
-    width:100%;
-    max-width: 980px;
-    background: var(--panel);
-    border:1px solid var(--line);
-    border-radius:6px;
-    padding: 22px 16px;
-  }
-  .sprocket-row{
-    display:flex;
-    justify-content:space-between;
-    padding: 0 6px;
-    margin-bottom:8px;
-  }
-  .sprocket-row.bottom{ margin-bottom:0; margin-top:8px; }
-  .sprocket-row div{
-    width:6px; height:6px;
-    border-radius:1px;
-    background: var(--line);
-  }
-  .strip{
-    display:flex;
-    width:100%;
-    border-radius:2px;
-    overflow:hidden;
-    background: #000;
-  }
-  .strip .cell{
-    flex:1;
-    aspect-ratio:1/1;
-    position:relative;
-    overflow:hidden;
-    border-right: 1px solid #000;
-  }
-  .strip .cell:last-child{ border-right:none; }
-  .strip .cell img{
-    width:100%; height:100%; object-fit:cover; display:block;
-  }
-  .strip .cell.empty{
-    background: repeating-linear-gradient(45deg, #202420, #202420 6px, #1a1d1a 6px, #1a1d1a 12px);
-    display:flex; align-items:center; justify-content:center;
-    color: var(--line);
-    font-family:'JetBrains Mono',monospace;
     font-size:11px;
+    font-weight:bold;
+    margin-bottom:3px;
   }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+
+  input[type=number], input[type=text], select{
+    width:100%;
+    font-family: Verdana, sans-serif;
+    font-size:12px;
+    padding: 3px 4px;
+    border: 2px solid;
+    border-color: var(--face-darker) var(--face-light) var(--face-light) var(--face-darker);
+    background:#fff;
+    color:#000;
+  }
+  input:focus, select:focus{ outline: 1px dotted #000; }
+
+  .btn{
+    font-family: Verdana, sans-serif;
+    font-size:12px;
+    font-weight:bold;
+    padding: 6px 10px;
+    background: var(--face);
+    border: 2px solid;
+    border-color: var(--face-light) var(--face-darker) var(--face-darker) var(--face-light);
+    cursor:pointer;
+    color:#000;
+  }
+  .btn:active{
+    border-color: var(--face-darker) var(--face-light) var(--face-light) var(--face-darker);
+  }
+  .btn.wide{ width:100%; }
+  .btn.blue{
+    background: linear-gradient(180deg, #cfe4ff, #86b8f5);
+    color:#003070;
+  }
+
+  .unit-toggle{ display:flex; gap:6px; margin-top:4px; }
+  .unit-toggle label{
+    display:flex; align-items:center; gap:3px;
+    font-size:11px; font-weight:normal;
+    cursor:pointer;
+  }
+
+  .hint{ font-size:10.5px; color:#444; margin-top:4px; }
+  .px-readout{
+    font-family:'VT323', monospace;
+    font-size:14px;
+    color: var(--red);
+    margin-top:4px;
+  }
+
+  .count-line{
+    font-size:11px;
+    margin-top:2px;
+    font-weight:bold;
+  }
+
+  /* ---------- preview area ---------- */
+  .preview-caption{
+    font-size:11px;
+    font-weight:bold;
+    margin-bottom:6px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .preview-caption .ratio{
+    font-family:'VT323',monospace;
+    font-size:14px;
+    color: var(--titlebar1);
+    font-weight:normal;
+  }
+
+  .constr-strip{
+    background: repeating-linear-gradient(45deg, #ffe000, #ffe000 10px, #111 10px, #111 20px);
+    height: 10px;
+    border: 1px solid #111;
+  }
+
+  .strip-frame{
+    background:#000;
+    padding: 8px;
+    border: 3px solid #111;
+  }
+  .strip-img{
+    display:block;
+    width:100%;
+    height:auto;
+    background:#000;
+  }
+
+  .save-hint{
+    margin-top:8px;
+    padding: 6px 8px;
+    background:#fffbdd;
+    border: 1px solid #d8c76a;
+    font-size:11px;
+    line-height:1.5;
+    text-align:center;
+  }
+  .save-hint b{ color: var(--red); }
+  .rendering-note{ font-size:10px; color:#666; }
 
   .empty-state{
-    color: var(--muted);
-    font-size:13px;
     text-align:center;
-    padding: 60px 20px;
-    max-width:420px;
-    line-height:1.6;
+    font-size:12px;
+    padding: 50px 16px;
+    color:#333;
   }
-  .empty-state b{ color: var(--text); }
+  .empty-state b{ color: var(--red); }
+  .blinker{ animation: blink 1s steps(1) infinite; font-weight:bold; }
+  @keyframes blink{ 50%{ opacity:0; } }
 
   #fileInput{ display:none; }
+
+  /* ---------- LCD hit counter footer ---------- */
+  .counter-wrap{
+    max-width: 1040px;
+    margin: 0 auto;
+    text-align:center;
+    padding: 10px 0 20px;
+  }
+  .lcd{
+    display:inline-block;
+    background: var(--lcd-bg);
+    color: var(--lcd-text);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    letter-spacing: 4px;
+    padding: 4px 10px;
+    border: 2px solid #111;
+    box-shadow: inset 0 0 6px #000;
+  }
+  .counter-label{
+    color:#eee;
+    font-size:10px;
+    margin-top:3px;
+    text-shadow:1px 1px 1px rgba(0,0,0,.6);
+  }
+  .webring{
+    text-align:center;
+    font-size:10px;
+    color:#eee;
+    margin-top:6px;
+    text-shadow:1px 1px 1px rgba(0,0,0,.6);
+  }
+  .webring a{ color:#ffe000; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Strip<span>Studio</span></h1>
-  <p>Susun 14 foto 1:1 jadi satu strip horizontal, atur ukuran cetak, lalu unduh sebagai gambar.</p>
-</header>
+<div class="banner">
+  <marquee behavior="scroll" scrollamount="4">✦✦✦ SELAMAT DATANG DI STRIPSTUDIO 2000 ✦✦✦ SUSUN FOTOMU JADI SATU STRIP HORIZONTAL ✦✦✦ 100% GRATIS, TANPA WATERMARK ✦✦✦ BEST VIEWED AT ANY RESOLUTION ✦✦✦</marquee>
+</div>
 
-<div class="layout">
-  <div class="panel">
+<div class="win">
+  <div class="titlebar">
+    <div class="tleft"><span class="icon"></span> stripstudio2000.exe</div>
+    <div class="winctl"><span>_</span><span>□</span><span>X</span></div>
+  </div>
+  <div class="win-body">
 
-    <div class="step">
-      <div class="step-head">
-        <div class="step-num">1</div>
-        <div class="step-title">Input 14 gambar</div>
-      </div>
-      <div class="step-body">
-        <div class="slots" id="slots"></div>
-        <button class="upload-btn" id="uploadBtn">+ Pilih Gambar</button>
-        <input type="file" id="fileInput" accept="image/*" multiple>
-        <div class="count-line"><b id="countNum">0</b> / 14 terisi &nbsp;·&nbsp; seret kotak untuk mengubah urutan</div>
-      </div>
-    </div>
+    <h1 class="pagetitle">★ StripStudio 2000 ★</h1>
+    <div class="subtag">susun foto jadi satu strip <span class="sparkle">•</span> atur jumlah kolom <span class="sparkle">•</span> atur ukuran cetak <span class="sparkle">•</span> tekan &amp; tahan buat simpan</div>
+    <hr class="groove">
 
-    <div class="step">
-      <div class="step-head">
-        <div class="step-num">2</div>
-        <div class="step-title">Ukuran canvas ekspor</div>
-      </div>
-      <div class="step-body">
-        <div class="field">
-          <label>Satuan</label>
-          <div class="unit-toggle">
-            <button type="button" data-unit="px" class="active">PX</button>
-            <button type="button" data-unit="cm">CM</button>
+    <div class="layout">
+      <div>
+
+        <div class="panel3d" style="margin-bottom:12px;">
+          <div class="step-title"><span class="num">1</span>JUMLAH KOLOM</div>
+          <div class="step-body">
+            <div class="field">
+              <label>Berapa kolom foto?</label>
+              <input type="number" id="colsInput" value="14" min="1" max="30">
+            </div>
+            <div class="hint">Contoh: isi 7 kalau mau 7 kolom saja. Slot &amp; hasil gambar otomatis menyesuaikan.</div>
           </div>
         </div>
-        <div class="row2">
-          <div class="field">
-            <label>Lebar total</label>
-            <input type="number" id="widthInput" value="4200" min="1">
-          </div>
-          <div class="field">
-            <label>Tinggi total</label>
-            <input type="number" id="heightInput" value="300" min="1">
-          </div>
-        </div>
-        <div class="field" id="dpiField" style="display:none;">
-          <label>DPI (resolusi cetak)</label>
-          <input type="number" id="dpiInput" value="300" min="72">
-        </div>
-        <div class="px-readout" id="pxReadout"></div>
-        <div class="hint">Lebar dibagi rata untuk 14 gambar; tiap gambar otomatis di-crop mengisi slotnya (center crop).</div>
-      </div>
-    </div>
 
-    <div class="step">
-      <div class="step-head">
-        <div class="step-num">3</div>
-        <div class="step-title">Ekspor</div>
+        <div class="panel3d" style="margin-bottom:12px;">
+          <div class="step-title"><span class="num">2</span>INPUT GAMBAR <span class="blinker" style="color:#ffe000;">&nbsp;NEW!</span></div>
+          <div class="step-body">
+            <div class="slots" id="slots"></div>
+            <button class="btn blue wide" id="uploadBtn">📁 Pilih Gambar...</button>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <div class="count-line"><span id="countNum">0</span> / <span id="colsLabel">14</span> terisi &nbsp;— seret kotak buat ubah urutan</div>
+          </div>
+        </div>
+
+        <div class="panel3d">
+          <div class="step-title"><span class="num">3</span>UKURAN CANVAS</div>
+          <div class="step-body">
+            <div class="unit-toggle">
+              <label><input type="radio" name="unit" value="px" checked> Pixel (px)</label>
+              <label><input type="radio" name="unit" value="cm"> Sentimeter (cm)</label>
+            </div>
+            <div class="row2" style="margin-top:8px;">
+              <div class="field">
+                <label>Lebar total</label>
+                <input type="number" id="widthInput" value="4200" min="1">
+              </div>
+              <div class="field">
+                <label>Tinggi total</label>
+                <input type="number" id="heightInput" value="300" min="1">
+              </div>
+            </div>
+            <div class="field" id="dpiField" style="display:none;">
+              <label>DPI (resolusi cetak)</label>
+              <input type="number" id="dpiInput" value="300" min="72">
+            </div>
+            <div class="px-readout" id="pxReadout"></div>
+            <div class="hint">Lebar dibagi rata ke tiap kolom; tiap foto otomatis di-crop tengah biar pas.</div>
+          </div>
+        </div>
+
       </div>
-      <div class="step-body">
-        <button class="export-btn" id="exportBtn" disabled>Unduh Gambar</button>
-        <div class="export-status" id="exportStatus"></div>
+
+      <div>
+        <div class="preview-caption">🖼️ HASIL STRIP &nbsp;<span class="ratio" id="ratioLabel"></span></div>
+
+        <div id="previewBlock">
+          <div class="constr-strip"></div>
+          <div class="strip-frame">
+            <img id="previewImg" class="strip-img" alt="Hasil susunan gambar">
+          </div>
+          <div class="constr-strip"></div>
+        </div>
+
+        <div class="save-hint" id="saveHint" style="display:none;">
+          👉 <b>Tekan &amp; tahan</b> gambar di atas, lalu pilih "Simpan Gambar" — file tersimpan langsung di resolusi <b id="saveHintSize"></b>.
+          <div class="rendering-note" id="renderingNote"></div>
+        </div>
+
+        <div class="panel3d sunken empty-state" id="emptyState">
+          Belum ada gambar.<br>
+          Yuk mulai dengan klik <b>📁 Pilih Gambar...</b> di panel kiri!
+        </div>
       </div>
     </div>
 
   </div>
+</div>
 
-  <main>
-    <div class="preview-label">PRATINJAU &nbsp;<span class="ratio" id="ratioLabel"></span></div>
-    <div class="strip-wrap" id="stripWrap">
-      <div class="sprocket-row" id="sprocketTop"></div>
-      <div class="strip" id="strip"></div>
-      <div class="sprocket-row bottom" id="sprocketBottom"></div>
-    </div>
-    <div class="empty-state" id="emptyState">Belum ada gambar. Mulai dengan menekan <b>+ Pilih Gambar</b> di panel kiri — bisa langsung pilih beberapa sekaligus.</div>
-  </main>
+<div class="counter-wrap">
+  <div class="lcd" id="lcdCounter">000000</div>
+  <div class="counter-label">visitors served by this session</div>
+  <div class="webring">« part of the <a href="#">RetroTools WebRing</a> » made with 💛 in a browser</div>
 </div>
 
 <script>
-const SLOT_COUNT = 14;
-let images = new Array(SLOT_COUNT).fill(null); // { url, img (HTMLImageElement) }
+/* ---------------- state ---------------- */
+let COLS = 14;
+let images = new Array(COLS).fill(null); // { url, img }
 let dragSrcIndex = null;
+let currentUnit = 'px';
+let lastPreviewUrl = null;
+let renderTimer = null;
 
+/* ---------------- element refs ---------------- */
 const slotsEl = document.getElementById('slots');
-const stripEl = document.getElementById('strip');
 const countNumEl = document.getElementById('countNum');
-const exportBtn = document.getElementById('exportBtn');
-const exportStatus = document.getElementById('exportStatus');
+const colsLabel = document.getElementById('colsLabel');
+const colsInput = document.getElementById('colsInput');
 const emptyState = document.getElementById('emptyState');
-const stripWrap = document.getElementById('stripWrap');
+const previewBlock = document.getElementById('previewBlock');
 const ratioLabel = document.getElementById('ratioLabel');
-const sprocketTop = document.getElementById('sprocketTop');
-const sprocketBottom = document.getElementById('sprocketBottom');
+const previewImg = document.getElementById('previewImg');
+const saveHint = document.getElementById('saveHint');
+const saveHintSize = document.getElementById('saveHintSize');
+const renderingNote = document.getElementById('renderingNote');
+const fileInput = document.getElementById('fileInput');
 
-function buildSprockets(){
-  sprocketTop.innerHTML = '';
-  sprocketBottom.innerHTML = '';
-  for(let i=0;i<28;i++){
-    sprocketTop.appendChild(document.createElement('div'));
-    sprocketBottom.appendChild(document.createElement('div'));
-  }
+/* ---------------- columns ---------------- */
+colsInput.addEventListener('change', ()=>{
+  let n = parseInt(colsInput.value, 10);
+  if(isNaN(n) || n < 1) n = 1;
+  if(n > 30) n = 30;
+  colsInput.value = n;
+  resizeColumns(n);
+});
+
+function resizeColumns(n){
+  const newImages = new Array(n).fill(null);
+  for(let i=0;i<Math.min(n, images.length);i++) newImages[i] = images[i];
+  images = newImages;
+  COLS = n;
+  colsLabel.textContent = n;
+  renderAll();
 }
-buildSprockets();
 
+/* ---------------- slots UI ---------------- */
 function renderSlots(){
   slotsEl.innerHTML = '';
-  for(let i=0;i<SLOT_COUNT;i++){
+  for(let i=0;i<COLS;i++){
     const s = document.createElement('div');
     s.className = 'slot' + (images[i] ? ' filled' : '');
     s.draggable = !!images[i];
@@ -461,21 +537,18 @@ function renderSlots(){
       });
     } else {
       s.innerHTML = `<div class="plus">+</div>`;
-      s.addEventListener('click', ()=> {
+      s.addEventListener('click', ()=>{
         pendingSlot = i;
-        document.getElementById('fileInput').click();
+        fileInput.click();
       });
     }
 
     s.addEventListener('dragstart', (e)=>{
-      if(!images[i]) { e.preventDefault(); return; }
+      if(!images[i]){ e.preventDefault(); return; }
       dragSrcIndex = i;
       e.dataTransfer.effectAllowed = 'move';
     });
-    s.addEventListener('dragover', (e)=>{
-      e.preventDefault();
-      s.classList.add('dragover');
-    });
+    s.addEventListener('dragover', (e)=>{ e.preventDefault(); s.classList.add('dragover'); });
     s.addEventListener('dragleave', ()=> s.classList.remove('dragover'));
     s.addEventListener('drop', (e)=>{
       e.preventDefault();
@@ -492,48 +565,11 @@ function renderSlots(){
   }
   const filled = images.filter(Boolean).length;
   countNumEl.textContent = filled;
-  exportBtn.disabled = filled === 0;
+  bumpCounter();
 }
 
-function renderStrip(){
-  stripEl.innerHTML = '';
-  const filled = images.filter(Boolean).length;
-  if(filled === 0){
-    stripWrap.style.display = 'none';
-    emptyState.style.display = 'block';
-    ratioLabel.textContent = '';
-    return;
-  }
-  stripWrap.style.display = 'block';
-  emptyState.style.display = 'none';
-
-  const w = parseFloat(document.getElementById('widthInput').value) || 0;
-  const h = parseFloat(document.getElementById('heightInput').value) || 0;
-  if(w>0 && h>0){
-    const ratio = (w/h).toFixed(2);
-    ratioLabel.textContent = `${w} × ${h} · rasio ${ratio}:1`;
-  }
-
-  for(let i=0;i<SLOT_COUNT;i++){
-    const cell = document.createElement('div');
-    if(images[i]){
-      cell.className = 'cell';
-      cell.innerHTML = `<img src="${images[i].url}">`;
-    } else {
-      cell.className = 'cell empty';
-      cell.textContent = i+1;
-    }
-    stripEl.appendChild(cell);
-  }
-}
-
-function renderAll(){
-  renderSlots();
-  renderStrip();
-}
-
+/* ---------------- file input ---------------- */
 let pendingSlot = null;
-const fileInput = document.getElementById('fileInput');
 document.getElementById('uploadBtn').addEventListener('click', ()=>{
   pendingSlot = null;
   fileInput.click();
@@ -549,8 +585,8 @@ fileInput.addEventListener('change', (e)=>{
   } else {
     let slotIdx = 0;
     for(const file of files){
-      while(slotIdx < SLOT_COUNT && images[slotIdx]) slotIdx++;
-      if(slotIdx >= SLOT_COUNT) break;
+      while(slotIdx < COLS && images[slotIdx]) slotIdx++;
+      if(slotIdx >= COLS) break;
       loadFileIntoSlot(file, slotIdx);
       slotIdx++;
     }
@@ -568,13 +604,10 @@ function loadFileIntoSlot(file, idx){
   img.src = url;
 }
 
-// unit toggle
-let currentUnit = 'px';
-document.querySelectorAll('.unit-toggle button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.unit-toggle button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const newUnit = btn.dataset.unit;
+/* ---------------- unit toggle ---------------- */
+document.querySelectorAll('input[name=unit]').forEach(radio=>{
+  radio.addEventListener('change', ()=>{
+    const newUnit = radio.value;
     if(newUnit === currentUnit) return;
 
     const wEl = document.getElementById('widthInput');
@@ -607,7 +640,7 @@ function updatePxReadout(){
     const h = parseFloat(document.getElementById('heightInput').value) || 0;
     const pxW = Math.round(w / 2.54 * dpi);
     const pxH = Math.round(h / 2.54 * dpi);
-    readout.textContent = `≈ ${pxW} × ${pxH} px pada ${dpi} DPI`;
+    readout.textContent = `≈ ${pxW} x ${pxH} px @ ${dpi} DPI`;
   } else {
     readout.textContent = '';
   }
@@ -620,11 +653,8 @@ function updatePxReadout(){
   });
 });
 
-// EXPORT
-exportBtn.addEventListener('click', ()=>{
-  const filled = images.filter(Boolean).length;
-  if(filled === 0) return;
-
+/* ---------------- canvas render ---------------- */
+function getTargetPx(){
   let w = parseFloat(document.getElementById('widthInput').value) || 0;
   let h = parseFloat(document.getElementById('heightInput').value) || 0;
   if(currentUnit === 'cm'){
@@ -635,12 +665,10 @@ exportBtn.addEventListener('click', ()=>{
     w = Math.round(w);
     h = Math.round(h);
   }
-  if(w <= 0 || h <= 0){
-    exportStatus.style.color = 'var(--red)';
-    exportStatus.textContent = 'Ukuran canvas tidak valid.';
-    return;
-  }
+  return { w, h };
+}
 
+function buildCompositeCanvas(w, h){
   const canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
@@ -648,83 +676,72 @@ exportBtn.addEventListener('click', ()=>{
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0,0,w,h);
 
-  const cellW = w / SLOT_COUNT;
-  for(let i=0;i<SLOT_COUNT;i++){
+  const cellW = w / COLS;
+  for(let i=0;i<COLS;i++){
     if(!images[i]) continue;
     const img = images[i].img;
     const x0 = Math.round(i * cellW);
     const x1 = Math.round((i+1) * cellW);
     const cw = x1 - x0;
     const ch = h;
-
-    // center-crop cover
     const srcSize = Math.min(img.naturalWidth, img.naturalHeight);
     const sx = (img.naturalWidth - srcSize) / 2;
     const sy = (img.naturalHeight - srcSize) / 2;
-
     ctx.drawImage(img, sx, sy, srcSize, srcSize, x0, 0, cw, ch);
   }
+  return canvas;
+}
 
-  exportStatus.style.color = 'var(--muted)';
-  exportStatus.textContent = 'Menyiapkan file...';
+function renderStrip(){
+  const filled = images.filter(Boolean).length;
+  if(filled === 0){
+    previewBlock.style.display = 'none';
+    emptyState.style.display = 'block';
+    saveHint.style.display = 'none';
+    ratioLabel.textContent = '';
+    return;
+  }
+  previewBlock.style.display = 'block';
+  emptyState.style.display = 'none';
+  saveHint.style.display = 'block';
 
-  canvas.toBlob((blob)=>{
-    if(!blob){
-      exportStatus.style.color = 'var(--red)';
-      exportStatus.textContent = 'Gagal membuat gambar. Coba ukuran canvas yang lebih kecil.';
-      return;
-    }
-    const filename = `stripstudio-${w}x${h}.png`;
-    const blobUrl = URL.createObjectURL(blob);
+  const { w, h } = getTargetPx();
+  if(w<=0 || h<=0){ ratioLabel.textContent = ''; return; }
 
-    // Try normal download first (works on desktop + most Android browsers)
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = blobUrl;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const ratio = (w/h).toFixed(2);
+  ratioLabel.textContent = `[ ${w} x ${h}px — rasio ${ratio}:1 — ${COLS} kolom ]`;
+  saveHintSize.textContent = `${w} x ${h}px`;
 
-    exportStatus.style.color = 'var(--green)';
-    exportStatus.textContent = `Selesai: ${w} × ${h}px, ${filled}/14 gambar terisi.`;
+  clearTimeout(renderTimer);
+  renderingNote.textContent = 'merender...';
+  renderTimer = setTimeout(()=>{
+    const canvas = buildCompositeCanvas(w, h);
+    canvas.toBlob((blob)=>{
+      if(!blob) return;
+      const url = URL.createObjectURL(blob);
+      if(lastPreviewUrl) URL.revokeObjectURL(lastPreviewUrl);
+      lastPreviewUrl = url;
+      previewImg.src = url;
+      renderingNote.textContent = '';
+    }, 'image/png');
+  }, 200);
+}
 
-    // Always show a manual-save fallback too, since download attribute
-    // is unreliable in some mobile / in-app browsers.
-    showExportPreview(blobUrl, filename);
-  }, 'image/png');
-});
+function renderAll(){
+  renderSlots();
+  renderStrip();
+}
 
-function showExportPreview(blobUrl, filename){
-  let overlay = document.getElementById('exportOverlay');
-  if(overlay) overlay.remove();
-
-  overlay = document.createElement('div');
-  overlay.id = 'exportOverlay';
-  overlay.style.cssText = `
-    position:fixed; inset:0; background:rgba(10,11,10,.88);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:14px; z-index:9999; padding:24px;
-  `;
-  overlay.innerHTML = `
-    <div style="max-width:90vw; max-height:60vh; overflow:auto; border:1px solid var(--line); border-radius:6px;">
-      <img src="${blobUrl}" style="display:block; max-width:100%; height:auto;">
-    </div>
-    <div style="color:var(--text); font-size:13px; text-align:center; max-width:340px; line-height:1.5;">
-      Kalau unduhan tidak otomatis mulai, <b>tekan lama gambar di atas</b> lalu pilih "Simpan Gambar" / "Download image" — atau buka di tab baru.
-    </div>
-    <div style="display:flex; gap:10px;">
-      <a href="${blobUrl}" download="${filename}" style="padding:9px 16px; background:var(--amber); color:var(--bg); border-radius:4px; font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; text-decoration:none;">Coba Unduh Lagi</a>
-      <a href="${blobUrl}" target="_blank" rel="noopener" style="padding:9px 16px; border:1px solid var(--line); color:var(--text); border-radius:4px; font-family:'Archivo',sans-serif; font-weight:700; font-size:13px; text-decoration:none;">Buka Tab Baru</a>
-      <button id="closeOverlay" style="padding:9px 16px; background:transparent; border:1px solid var(--line); color:var(--muted); border-radius:4px; font-size:13px; cursor:pointer;">Tutup</button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  document.getElementById('closeOverlay').addEventListener('click', ()=> overlay.remove());
+/* ---------------- fun retro hit counter ---------------- */
+let counterVal = Math.floor(Math.random()*9000)+1000;
+function bumpCounter(){
+  counterVal++;
+  document.getElementById('lcdCounter').textContent = String(counterVal).padStart(6,'0');
 }
 
 renderAll();
 updatePxReadout();
+document.getElementById('lcdCounter').textContent = String(counterVal).padStart(6,'0');
 </script>
 
 </body>
